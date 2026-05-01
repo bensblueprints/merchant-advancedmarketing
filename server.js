@@ -2,6 +2,7 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 80;
@@ -11,17 +12,80 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Email transporter (configured via env vars)
+let transporter = null;
+if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+  console.log('Email transporter configured.');
+} else {
+  console.log('Email not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS env vars to enable.');
+}
+
+const FUNDING_URL = 'https://my.americasfundingexperts.com/?id=1820217000240009008';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'contact@advancedmarketing.co';
+
+function sendConfirmationEmail(to, name, loanType) {
+  if (!transporter) {
+    console.log('No email transporter. Skipping confirmation email.');
+    return Promise.resolve(false);
+  }
+  const loanName = loanType ? loanType.replace(/-/g, ' ').toUpperCase() : 'BUSINESS FUNDING';
+  const mailOptions = {
+    from: `"Advanced Marketing Co." <${FROM_EMAIL}>`,
+    to,
+    subject: 'Your Funding Application — Next Steps',
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1e293b;">
+        <div style="background:#0f172a;padding:24px;text-align:center;">
+          <h1 style="color:#c9a44c;margin:0;font-size:22px;">Advanced Marketing Co.</h1>
+          <p style="color:#cbd5e1;margin:6px 0 0;font-size:13px;">Business Funding & Payment Solutions</p>
+        </div>
+        <div style="padding:24px;background:#ffffff;">
+          <p style="font-size:16px;">Hi ${name || 'there'},</p>
+          <p>Thank you for submitting your ${loanName} quote request. We've received your information and a funding advisor will review it shortly.</p>
+          <p><strong>Next step:</strong> Complete your official funding application to get matched with lenders instantly.</p>
+          <div style="text-align:center;margin:28px 0;">
+            <a href="${FUNDING_URL}" style="background:#0f172a;color:#c9a44c;padding:14px 28px;text-decoration:none;border-radius:6px;font-weight:700;display:inline-block;">Complete My Application</a>
+          </div>
+          <p style="font-size:13px;color:#64748b;">If the button doesn't work, copy and paste this link:<br>${FUNDING_URL}</p>
+          <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">
+          <p style="font-size:13px;color:#64748b;"><strong>Questions?</strong> Reply to this email or call us. We're here to help.</p>
+          <p style="font-size:13px;color:#64748b;">Please check your inbox (and spam folder) for updates from our lending partners.</p>
+        </div>
+        <div style="background:#f8fafc;padding:16px;text-align:center;font-size:12px;color:#94a3b8;">
+          &copy; 2026 Advanced Marketing Co. Ltd. Not a direct lender.
+        </div>
+      </div>
+    `
+  };
+  return transporter.sendMail(mailOptions)
+    .then(info => {
+      console.log('Email sent:', info.messageId);
+      return true;
+    })
+    .catch(err => {
+      console.error('Email error:', err.message);
+      return false;
+    });
+}
+
 // SQLite DB
 const db = new sqlite3.Database('/data/leads.db', (err) => {
   if (err) {
     console.error('DB open error:', err.message);
-    // Fallback to local file if /data isn't available
     return;
   }
   console.log('Connected to SQLite database.');
 });
 
-// If /data failed, use local
 const dbPath = db.open ? '/data/leads.db' : path.join(__dirname, 'leads.db');
 const db2 = new sqlite3.Database(dbPath);
 
@@ -78,7 +142,12 @@ app.post('/api/lead', (req, res) => {
       console.error('Insert error:', err);
       return res.status(500).json({ error: 'Database error' });
     }
-    res.json({ success: true, id: this.lastID });
+    const id = this.lastID;
+
+    // Fire confirmation email asynchronously
+    sendConfirmationEmail(email, first_name, loan_type);
+
+    res.json({ success: true, id, funding_url: FUNDING_URL });
   });
 });
 

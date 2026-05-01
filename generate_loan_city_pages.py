@@ -1,5 +1,7 @@
 import os
 
+FUNDING_URL = 'https://my.americasfundingexperts.com/?id=1820217000240009008'
+
 STATE_NAMES = {
     'ak': 'Alaska', 'al': 'Alabama', 'ar': 'Arkansas', 'az': 'Arizona',
     'ca': 'California', 'co': 'Colorado', 'ct': 'Connecticut', 'de': 'Delaware',
@@ -231,7 +233,8 @@ def generate_state_page(state_code, loan_key, loan):
 <li><span style="color:var(--gold);">&#9733;</span> Terms: {loan['term']}</li>
 <li><span style="color:var(--gold);">&#9733;</span> {loan['credit_req']}</li>
 </ul>
-<a href="#apply" class="btn btn-primary btn-lg">Get My Free Quote &rarr;</a>
+<a href="{FUNDING_URL}" class="btn btn-primary btn-lg">Apply Now Directly &rarr;</a>
+<p style="margin-top:12px;font-size:13px;color:var(--gray-400);">Or fill out the form below and we will call you.</p>
 </div>
 <div class="loan-img">
 <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&auto=format&fit=crop&q=80" alt="{loan['name']} for {state_name} businesses">
@@ -270,8 +273,8 @@ def generate_state_page(state_code, loan_key, loan):
 <section class="section section-alt" id="apply">
 <div class="container">
 <div class="form-wrap">
-<h2>Apply for {loan['name']} in {state_name}</h2>
-<p>Get a free, no-obligation quote in under 2 hours.</p>
+<h2>Prefer a Callback?</h2>
+<p>Fill out the form below and a funding advisor will call you within 2 hours to discuss your options. You will also receive a confirmation email with next steps.</p>
 <form id="leadForm">
 <input type="hidden" name="loan_type" value="{loan_key}">
 <div class="form-grid">
@@ -302,7 +305,7 @@ def generate_state_page(state_code, loan_key, loan):
 </select></div>
 <div class="form-group full"><label for="notes">Additional Details</label><textarea id="notes" name="notes" placeholder="Tell us about your funding needs..."></textarea></div>
 </div>
-<button type="submit" class="btn btn-primary btn-lg submit-btn">Get My Free Quote &rarr;</button>
+<button type="submit" class="btn btn-primary btn-lg submit-btn">Request a Callback &rarr;</button>
 <p class="form-note">&#128274; Your information is secure and encrypted. No hard credit inquiry.</p>
 </form>
 </div>
@@ -349,10 +352,17 @@ document.getElementById('leadForm').addEventListener('submit', async function(e)
   try {{
     const res = await fetch('/api/lead', {{ method: 'POST', headers: {{'Content-Type':'application/json'}}, body: JSON.stringify(data) }});
     const json = await res.json();
-    if (json.success) {{ showToast('Quote request submitted! We will call you within 2 hours.'); e.target.reset(); }}
-    else {{ showToast('Error. Please try again.'); }}
-  }} catch {{ showToast('Network error. Please try again.'); }}
-  btn.innerHTML = original; btn.disabled = false;
+    if (json.success) {{
+      showToast('Thanks! Check your email for next steps. Redirecting to application...');
+      setTimeout(() => {{ window.location.href = json.funding_url || '{FUNDING_URL}'; }}, 2000);
+    }} else {{
+      showToast('Error. Please try again.');
+      btn.innerHTML = original; btn.disabled = false;
+    }}
+  }} catch {{
+    showToast('Network error. Please try again.');
+    btn.innerHTML = original; btn.disabled = false;
+  }}
 }});
 function showToast(msg) {{ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),5000); }}
 </script>
@@ -410,7 +420,8 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
 <li><span style="color:var(--gold);">&#9733;</span> {loan['credit_req']}</li>
 <li><span style="color:var(--gold);">&#9733;</span> Works with {loan['industries']}</li>
 </ul>
-<a href="#apply" class="btn btn-primary btn-lg">Get My Free Quote &rarr;</a>
+<a href="{FUNDING_URL}" class="btn btn-primary btn-lg">Apply Now Directly &rarr;</a>
+<p style="margin-top:12px;font-size:13px;color:var(--gray-400);">Or fill out the form below and we will call you.</p>
 </div>
 <div class="loan-img">
 <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&auto=format&fit=crop&q=80" alt="{loan['name']} for {loc} businesses">
@@ -448,8 +459,8 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
 <section class="section section-alt" id="apply">
 <div class="container">
 <div class="form-wrap">
-<h2>Apply for {loan['name']} in {loc}</h2>
-<p>Get a free, no-obligation quote in under 2 hours.</p>
+<h2>Prefer a Callback?</h2>
+<p>Fill out the form below and a funding advisor will call you within 2 hours to discuss your options. You will also receive a confirmation email with next steps.</p>
 <form id="leadForm">
 <input type="hidden" name="loan_type" value="{loan_key}">
 <div class="form-grid">
@@ -480,7 +491,7 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
 </select></div>
 <div class="form-group full"><label for="notes">Additional Details</label><textarea id="notes" name="notes" placeholder="Tell us about your funding needs..."></textarea></div>
 </div>
-<button type="submit" class="btn btn-primary btn-lg submit-btn">Get My Free Quote &rarr;</button>
+<button type="submit" class="btn btn-primary btn-lg submit-btn">Request a Callback &rarr;</button>
 <p class="form-note">&#128274; Your information is secure and encrypted. No hard credit inquiry.</p>
 </form>
 </div>
@@ -527,10 +538,17 @@ document.getElementById('leadForm').addEventListener('submit', async function(e)
   try {{
     const res = await fetch('/api/lead', {{ method: 'POST', headers: {{'Content-Type':'application/json'}}, body: JSON.stringify(data) }});
     const json = await res.json();
-    if (json.success) {{ showToast('Quote request submitted! We will call you within 2 hours.'); e.target.reset(); }}
-    else {{ showToast('Error. Please try again.'); }}
-  }} catch {{ showToast('Network error. Please try again.'); }}
-  btn.innerHTML = original; btn.disabled = false;
+    if (json.success) {{
+      showToast('Thanks! Check your email for next steps. Redirecting to application...');
+      setTimeout(() => {{ window.location.href = json.funding_url || '{FUNDING_URL}'; }}, 2000);
+    }} else {{
+      showToast('Error. Please try again.');
+      btn.innerHTML = original; btn.disabled = false;
+    }}
+  }} catch {{
+    showToast('Network error. Please try again.');
+    btn.innerHTML = original; btn.disabled = false;
+  }}
 }});
 function showToast(msg) {{ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),5000); }}
 </script>

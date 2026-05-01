@@ -41,7 +41,8 @@
 <li><span style="color:var(--gold);">&#9733;</span> None</li>
 <li><span style="color:var(--gold);">&#9733;</span> Works with retail stores, restaurants, medical practices, e-commerce, salons, and any business that accepts cards</li>
 </ul>
-<a href="#apply" class="btn btn-primary btn-lg">Get My Free Quote &rarr;</a>
+<a href="https://my.americasfundingexperts.com/?id=1820217000240009008" class="btn btn-primary btn-lg">Apply Now Directly &rarr;</a>
+<p style="margin-top:12px;font-size:13px;color:var(--gray-400);">Or fill out the form below and we will call you.</p>
 </div>
 <div class="loan-img">
 <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&auto=format&fit=crop&q=80" alt="Credit Card Processing for Franklin, Tennessee businesses">
@@ -79,8 +80,8 @@
 <section class="section section-alt" id="apply">
 <div class="container">
 <div class="form-wrap">
-<h2>Apply for Credit Card Processing in Franklin, Tennessee</h2>
-<p>Get a free, no-obligation quote in under 2 hours.</p>
+<h2>Prefer a Callback?</h2>
+<p>Fill out the form below and a funding advisor will call you within 2 hours to discuss your options. You will also receive a confirmation email with next steps.</p>
 <form id="leadForm">
 <input type="hidden" name="loan_type" value="processing">
 <div class="form-grid">
@@ -111,7 +112,7 @@
 </select></div>
 <div class="form-group full"><label for="notes">Additional Details</label><textarea id="notes" name="notes" placeholder="Tell us about your funding needs..."></textarea></div>
 </div>
-<button type="submit" class="btn btn-primary btn-lg submit-btn">Get My Free Quote &rarr;</button>
+<button type="submit" class="btn btn-primary btn-lg submit-btn">Request a Callback &rarr;</button>
 <p class="form-note">&#128274; Your information is secure and encrypted. No hard credit inquiry.</p>
 </form>
 </div>
@@ -158,10 +159,17 @@ document.getElementById('leadForm').addEventListener('submit', async function(e)
   try {
     const res = await fetch('/api/lead', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
     const json = await res.json();
-    if (json.success) { showToast('Quote request submitted! We will call you within 2 hours.'); e.target.reset(); }
-    else { showToast('Error. Please try again.'); }
-  } catch { showToast('Network error. Please try again.'); }
-  btn.innerHTML = original; btn.disabled = false;
+    if (json.success) {
+      showToast('Thanks! Check your email for next steps. Redirecting to application...');
+      setTimeout(() => { window.location.href = json.funding_url || 'https://my.americasfundingexperts.com/?id=1820217000240009008'; }, 2000);
+    } else {
+      showToast('Error. Please try again.');
+      btn.innerHTML = original; btn.disabled = false;
+    }
+  } catch {
+    showToast('Network error. Please try again.');
+    btn.innerHTML = original; btn.disabled = false;
+  }
 });
 function showToast(msg) { const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),5000); }
 </script>
