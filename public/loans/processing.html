@@ -221,7 +221,10 @@
       try {
         const res = await fetch('/api/lead', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
         const json = await res.json();
-        if (json.success) { showToast('Audit request submitted! We will call you within 2 hours.'); e.target.reset(); }
+        if (json.success) {
+          showToast('Thanks! Check your email for next steps. Redirecting to application...');
+          setTimeout(() => { window.location.href = json.funding_url || 'https://my.americasfundingexperts.com/?id=1820217000240009008'; }, 2000);
+        }
         else { showToast('Error. Please try again.'); }
       } catch { showToast('Network error. Please try again.'); }
       btn.innerHTML = original; btn.disabled = false;
