@@ -335,8 +335,8 @@ def generate_state_page(state_code, loan_key, loan):
 <li><span style="color:var(--gold);">&#9733;</span> Terms: {loan['term']}</li>
 <li><span style="color:var(--gold);">&#9733;</span> {loan['credit_req']}</li>
 </ul>
-<a href="{FUNDING_URL}" class="btn btn-primary btn-lg">Apply Now Directly &rarr;</a>
-<p style="margin-top:12px;font-size:13px;color:var(--gray-400);">Or fill out the form below and we will call you.</p>
+<a href="#apply" class="btn btn-primary btn-lg">Apply Now &rarr;</a>
+<p style="margin-top:12px;font-size:13px;color:var(--gray-400);">Fill out the application below and get redirected to our funding partners instantly.</p>
 </div>
 <div class="loan-img">
 <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&auto=format&fit=crop&q=80" alt="{loan['name']} for {state_name} businesses">
@@ -393,8 +393,8 @@ def generate_state_page(state_code, loan_key, loan):
 <section class="section section-alt" id="apply">
 <div class="container">
 <div class="form-wrap">
-<h2>Prefer a Callback?</h2>
-<p>Fill out the form below and a funding advisor will call you within 2 hours to discuss your options. You will also receive a confirmation email with next steps.</p>
+<h2>Apply for {loan['name']} in {loc}</h2>
+<p>Complete the application below. A funding advisor will review your information, send you a confirmation email, and redirect you to our lending partners to finalize your funding.</p>
 <form id="leadForm">
 <input type="hidden" name="loan_type" value="{loan_key}">
 <div class="form-grid">
@@ -425,7 +425,7 @@ def generate_state_page(state_code, loan_key, loan):
 </select></div>
 <div class="form-group full"><label for="notes">Additional Details</label><textarea id="notes" name="notes" placeholder="Tell us about your funding needs..."></textarea></div>
 </div>
-<button type="submit" class="btn btn-primary btn-lg submit-btn">Request a Callback &rarr;</button>
+<button type="submit" class="btn btn-primary btn-lg submit-btn">Submit Application &rarr;</button>
 <p class="form-note">&#128274; Your information is secure and encrypted. No hard credit inquiry.</p>
 </form>
 </div>
@@ -547,8 +547,8 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
 <li><span style="color:var(--gold);">&#9733;</span> {loan['credit_req']}</li>
 <li><span style="color:var(--gold);">&#9733;</span> Works with {loan['industries']}</li>
 </ul>
-<a href="{FUNDING_URL}" class="btn btn-primary btn-lg">Apply Now Directly &rarr;</a>
-<p style="margin-top:12px;font-size:13px;color:var(--gray-400);">Or fill out the form below and we will call you.</p>
+<a href="#apply" class="btn btn-primary btn-lg">Apply Now &rarr;</a>
+<p style="margin-top:12px;font-size:13px;color:var(--gray-400);">Fill out the application below and get redirected to our funding partners instantly.</p>
 </div>
 <div class="loan-img">
 <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&auto=format&fit=crop&q=80" alt="{loan['name']} for {loc} businesses">
@@ -604,8 +604,8 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
 <section class="section section-alt" id="apply">
 <div class="container">
 <div class="form-wrap">
-<h2>Prefer a Callback?</h2>
-<p>Fill out the form below and a funding advisor will call you within 2 hours to discuss your options. You will also receive a confirmation email with next steps.</p>
+<h2>Apply for {loan['name']} in {loc}</h2>
+<p>Complete the application below. A funding advisor will review your information, send you a confirmation email, and redirect you to our lending partners to finalize your funding.</p>
 <form id="leadForm">
 <input type="hidden" name="loan_type" value="{loan_key}">
 <div class="form-grid">
@@ -636,7 +636,7 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
 </select></div>
 <div class="form-group full"><label for="notes">Additional Details</label><textarea id="notes" name="notes" placeholder="Tell us about your funding needs..."></textarea></div>
 </div>
-<button type="submit" class="btn btn-primary btn-lg submit-btn">Request a Callback &rarr;</button>
+<button type="submit" class="btn btn-primary btn-lg submit-btn">Submit Application &rarr;</button>
 <p class="form-note">&#128274; Your information is secure and encrypted. No hard credit inquiry.</p>
 </form>
 </div>
