@@ -664,6 +664,131 @@ input:focus, select:focus, textarea:focus {
 .tag-processing { background: #fee2e2; color: #991b1b; }
 .tag-invoice { background: #e0e7ff; color: #3730a3; }
 
+/* Content Sections (long-form SEO) */
+.content-section {
+  background: var(--white);
+  padding: 80px 0;
+}
+
+.content-section h2 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 24px;
+}
+
+.content-section p {
+  color: var(--gray-700);
+  margin-bottom: 20px;
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+/* Process Section */
+.process-section { background: var(--white); }
+
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.process-step {
+  text-align: center;
+  padding: 32px 24px;
+  background: var(--gray-50);
+  border-radius: 12px;
+  border: 1px solid var(--gray-200);
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  background: var(--navy);
+  color: var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin: 0 auto 16px;
+}
+
+.step-content h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+.step-content p {
+  color: var(--gray-500);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* FAQ Section */
+.faq-section { background: var(--gray-50); }
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.faq-item {
+  background: var(--white);
+  padding: 28px;
+  border-radius: 12px;
+  border: 1px solid var(--gray-200);
+}
+
+.faq-item h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.faq-item p {
+  color: var(--gray-500);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* Related Section */
+.related-section { background: var(--white); }
+
+/* Local list */
+.local-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.local-item {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  color: var(--gray-700);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.local-item:hover {
+  background: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .nav { display: none; }

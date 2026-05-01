@@ -1,22 +1,15 @@
 import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from content_data import (
+    STATE_NAMES, STATE_FACTS, FAQ_TEMPLATES, PROCESS_STEPS,
+    INTRO_PARAGRAPHS, AFTER_APPLY, RELATED_OPTIONS, TRUST_SECTION,
+    MAJOR_CITIES, get_intro, get_faqs, get_process_steps,
+    get_after_apply, get_related, get_trust_section,
+    is_major_city, get_city_context
+)
 
 FUNDING_URL = 'https://my.americasfundingexperts.com/?id=1820217000240009008'
-
-STATE_NAMES = {
-    'ak': 'Alaska', 'al': 'Alabama', 'ar': 'Arkansas', 'az': 'Arizona',
-    'ca': 'California', 'co': 'Colorado', 'ct': 'Connecticut', 'de': 'Delaware',
-    'fl': 'Florida', 'ga': 'Georgia', 'hi': 'Hawaii', 'ia': 'Iowa',
-    'id': 'Idaho', 'il': 'Illinois', 'in': 'Indiana', 'ks': 'Kansas',
-    'ky': 'Kentucky', 'la': 'Louisiana', 'ma': 'Massachusetts', 'md': 'Maryland',
-    'me': 'Maine', 'mi': 'Michigan', 'mn': 'Minnesota', 'mo': 'Missouri',
-    'ms': 'Mississippi', 'mt': 'Montana', 'nc': 'North Carolina', 'nd': 'North Dakota',
-    'ne': 'Nebraska', 'nh': 'New Hampshire', 'nj': 'New Jersey', 'nm': 'New Mexico',
-    'nv': 'Nevada', 'ny': 'New York', 'oh': 'Ohio', 'ok': 'Oklahoma',
-    'or': 'Oregon', 'pa': 'Pennsylvania', 'ri': 'Rhode Island', 'sc': 'South Carolina',
-    'sd': 'South Dakota', 'tn': 'Tennessee', 'tx': 'Texas', 'ut': 'Utah',
-    'va': 'Virginia', 'vt': 'Vermont', 'wa': 'Washington', 'wi': 'Wisconsin',
-    'wv': 'West Virginia', 'wy': 'Wyoming'
-}
 
 LOAN_TYPES = {
     'mca': {
@@ -174,8 +167,110 @@ def title_case(s):
 def city_display(city_slug):
     return title_case(city_slug)
 
+def build_local_landscape(state_code, city_slug, loan_key, loan):
+    state_name = STATE_NAMES[state_code]
+    city_name = city_display(city_slug) if city_slug else None
+    loc = f"{city_name}, {state_name}" if city_name else state_name
+    facts = STATE_FACTS.get(state_code, STATE_FACTS['tx'])
+    city_ctx = get_city_context(city_slug, state_name) if city_slug else f"a thriving business environment"
+
+    return f'''<section class="section content-section">
+<div class="container">
+<h2>The {loc} Business Landscape</h2>
+<p>{state_name} is home to more than {facts['smb_count']} small businesses, making it one of the most dynamic business environments in the country. The state's economy is driven by {facts['major_sectors']}, creating a diverse and resilient marketplace for entrepreneurs. For business owners in {loc}, this means access to a {facts['climate']} that supports growth across multiple industries.</p>
+<p>{loc} represents {city_ctx}. Companies here face the same challenges as businesses nationwide — managing cash flow, scaling operations, and accessing capital when opportunities arise. {loan['name']} has become an increasingly popular solution because it provides {loan['speed']} funding without the rigid requirements of traditional bank financing.</p>
+<p>Our lending partners understand the unique dynamics of doing business in {state_name}. They recognize that {facts['strength']}, and they have designed {loan['short']} programs specifically for companies operating in this environment. Whether you are a startup looking for initial capital or an established business planning expansion, {loan['name']} offers the flexibility and speed that {loc} entrepreneurs need.</p>
+</div>
+</section>'''
+
+def build_process_section(loan_key, loc):
+    steps = get_process_steps(loan_key, loc)
+    steps_html = ''.join(
+        f'<div class="process-step"><div class="step-number">{i+1}</div><div class="step-content"><h4>{s[0]}</h4><p>{s[1]}</p></div></div>'
+        for i, s in enumerate(steps)
+    )
+    return f'''<section class="section section-alt process-section">
+<div class="container">
+<div class="section-header">
+<h2>How {LOAN_TYPES[loan_key]["name"]} Works</h2>
+<p>A simple, transparent process from application to funding.</p>
+</div>
+<div class="process-grid">
+{steps_html}
+</div>
+</div>
+</section>'''
+
+def build_industries_deep(state_code, city_slug, loan_key, loan):
+    state_name = STATE_NAMES[state_code]
+    city_name = city_display(city_slug) if city_slug else None
+    loc = f"{city_name}, {state_name}" if city_name else state_name
+    facts = STATE_FACTS.get(state_code, STATE_FACTS['tx'])
+    intro = get_intro(loan_key, loc, loan['industries'])
+
+    return f'''<section class="section content-section">
+<div class="container">
+<h2>{loan['name']} for {loc} Industries</h2>
+{intro}
+<p>In {state_name}, businesses operating in {facts['major_sectors']} have particularly strong success with {loan['name']}. The state's economic diversity means lenders here understand a wide range of business models and revenue patterns. For companies in {loc} serving these sectors, {loan['short']} provides the working capital needed to purchase inventory, hire staff, upgrade equipment, and expand market reach.</p>
+<p>One of the key advantages of {loan['name']} is its adaptability. Unlike one-size-fits-all bank loans, these programs are structured around your actual business performance. This means {loc} businesses with seasonal revenue, project-based income, or fluctuating sales can still qualify based on their overall financial health rather than a single month's numbers.</p>
+<p>Our network includes lenders who specialize in working with {loan['industries']} throughout {state_name}. They understand industry-specific cash flow patterns, peak seasons, and common expense cycles. This specialized knowledge translates to better approval rates, more favorable terms, and faster funding for {loc} business owners.</p>
+</div>
+</section>'''
+
+def build_faq_section(loan_key, loc):
+    faqs = get_faqs(loan_key, loc)
+    faq_html = ''.join(
+        f'<div class="faq-item"><h4>{f["q"]}</h4><p>{f["a"]}</p></div>'
+        for f in faqs
+    )
+    return f'''<section class="section section-alt faq-section">
+<div class="container">
+<div class="section-header">
+<h2>Frequently Asked Questions</h2>
+<p>Everything you need to know about {LOAN_TYPES[loan_key]["name"]} in {loc}.</p>
+</div>
+<div class="faq-grid">
+{faq_html}
+</div>
+</div>
+</section>'''
+
+def build_after_apply(loan_key, loc, state_name, loan):
+    text = get_after_apply(loan_key, loc)
+    return f'''<section class="section content-section">
+<div class="container">
+<h2>What Happens After You Apply for {loan['name']} in {loc}</h2>
+<p>{text}</p>
+<p>Throughout the process, transparency is our priority. There are no hidden fees, no surprise charges, and no obligation until you choose to accept an offer. Every {loc} business owner who applies receives personalized attention from a funding advisor who understands both the {state_name} market and your specific industry.</p>
+<p>We also recommend checking your email regularly after applying, as you will receive updates at each stage. If you have questions at any point, your advisor is just a phone call or email away. Our goal is to make the funding process as smooth and stress-free as possible, so you can focus on what you do best — running your business in {loc}.</p>
+</div>
+</section>'''
+
+def build_trust_section(loc, state_name, loan):
+    return get_trust_section(loc, state_name, loan['industries'])
+
+def build_related_options(loan_key, loc):
+    related = get_related(loan_key)
+    cards = ''.join(
+        f'<div class="card"><h4>{r[0]}</h4><p>{r[2]}</p><a href="{r[1]}" class="card-link">Learn More &rarr;</a></div>'
+        for r in related
+    )
+    return f'''<section class="section section-alt related-section">
+<div class="container">
+<div class="section-header">
+<h2>Explore Other Funding Options for {loc}</h2>
+<p>Every business has different needs. Browse these related solutions to find the right fit.</p>
+</div>
+<div class="cards-grid">
+{cards}
+</div>
+</div>
+</section>'''
+
 def generate_state_page(state_code, loan_key, loan):
     state_name = STATE_NAMES[state_code]
+    loc = state_name
     cities_in_state = []
     state_dir = f'public/cities/{state_code}'
     if os.path.exists(state_dir):
@@ -189,6 +284,13 @@ def generate_state_page(state_code, loan_key, loan):
         city_links += '</div>'
 
     features_html = ''.join(f'<li>{f}</li>' for f in loan['features'])
+    local_landscape = build_local_landscape(state_code, None, loan_key, loan)
+    process_section = build_process_section(loan_key, loc)
+    industries_deep = build_industries_deep(state_code, None, loan_key, loan)
+    faq_section = build_faq_section(loan_key, loc)
+    after_apply = build_after_apply(loan_key, loc, state_name, loan)
+    trust_section = build_trust_section(loc, state_name, loan)
+    related_section = build_related_options(loan_key, loc)
 
     return f'''<!DOCTYPE html>
 <html lang="en">
@@ -243,6 +345,8 @@ def generate_state_page(state_code, loan_key, loan):
 </div>
 </section>
 
+{local_landscape}
+
 <section class="section">
 <div class="container">
 <div class="section-header">
@@ -269,6 +373,22 @@ def generate_state_page(state_code, loan_key, loan):
 {city_links}
 </div>
 </section>
+
+{process_section}
+
+{industries_deep}
+
+{faq_section}
+
+{after_apply}
+
+<section class="section section-alt">
+<div class="container">
+{trust_section}
+</div>
+</section>
+
+{related_section}
 
 <section class="section section-alt" id="apply">
 <div class="container">
@@ -376,6 +496,13 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
     loc = f"{city_name}, {state_name}"
 
     features_html = ''.join(f'<li>{f}</li>' for f in loan['features'])
+    local_landscape = build_local_landscape(state_code, city_slug, loan_key, loan)
+    process_section = build_process_section(loan_key, loc)
+    industries_deep = build_industries_deep(state_code, city_slug, loan_key, loan)
+    faq_section = build_faq_section(loan_key, loc)
+    after_apply = build_after_apply(loan_key, loc, state_name, loan)
+    trust_section = build_trust_section(loc, state_name, loan)
+    related_section = build_related_options(loan_key, loc)
 
     return f'''<!DOCTYPE html>
 <html lang="en">
@@ -430,6 +557,8 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
 </div>
 </section>
 
+{local_landscape}
+
 <section class="section">
 <div class="container">
 <div class="section-header">
@@ -455,6 +584,22 @@ def generate_city_page(state_code, city_slug, loan_key, loan):
 </div>
 </div>
 </section>
+
+{process_section}
+
+{industries_deep}
+
+{faq_section}
+
+{after_apply}
+
+<section class="section section-alt">
+<div class="container">
+{trust_section}
+</div>
+</section>
+
+{related_section}
 
 <section class="section section-alt" id="apply">
 <div class="container">
